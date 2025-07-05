@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>صفحة العضو</title>
+</head>
+<body>
+  <h1>مرحباً <%= user.nickname %> (الدور: <%= user.role %>)</h1>
+  <p>التحذيرات: <%= user.warnings %></p>
+  <p>التنبيهات: <%= user.alerts %></p>
+  <p>بطاقة الهانوفودا: <%= user.hasCard ? '🎴 يمتلك' : '❌ لا يمتلك' %></p>
+  <p>بيلي الشهر الحالي: <%= user.billyCurrent %></p>
+  <p>بيلي الشهر القادم: <%= user.billyNext %></p>
+
+  <h3>تحويل بيلي</h3>
+  <form method="POST" action="/transfer">
+    <input name="toUsername" placeholder="اسم المستلم" required />
+    <input name="amount" type="number" placeholder="المبلغ" required />
+    <button type="submit">تحويل</button>
+  </form>
+
+  <h3>سجل التحويلات</h3>
+  <ul>
+    <% transfers.forEach(t => { %>
+      <li>
+        <%= t.date.slice(0, 16).replace('T', ' ') %>: 
+        <%= t.fromUser === user.id ? 'أنت' : t.fromNick %> 
+        → <%= t.toUser === user.id ? 'أنت' : t.toNick %> 
+        (المبلغ: <%= t.amount %> بيلي)
+      </li>
+    <% }) %>
+  </ul>
+
+  <p><a href="/logout">تسجيل الخروج</a></p>
+</body>
+</html>

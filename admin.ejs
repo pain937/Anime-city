@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>لوحة المشرف</title>
+</head>
+<body>
+  <h1>مرحباً <%= user.nickname %> (الدور: <%= user.role %>)</h1>
+
+  <h2>المستخدمون</h2>
+  <table border="1" cellpadding="5" cellspacing="0">
+    <tr>
+      <th>رقم</th><th>اسم المستخدم</th><th>اللقب</th><th>التحذيرات</th><th>التنبيهات</th>
+      <th>بطاقة الهانوفودا 🎴</th><th>بيلي الحالي</th><th>بيلي الشهر القادم</th><th>الدور</th>
+      <th>إجراءات</th>
+    </tr>
+    <% users.forEach((u, index) => { %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td><%= u.username %></td>
+        <form method="POST" action="/users/<%= u.id %>/edit">
+          <td><input name="nickname" value="<%= u.nickname %>" required></td>
+          <td><input name="warnings" type="number" value="<%= u.warnings %>" min="0"></td>
+          <td><input name="alerts" type="number" value="<%= u.alerts %>" min="0"></td>
+          <td>
+            <select name="hasCard">
+              <option value="1" <%= u.hasCard ? 'selected' : '' %>>نعم 🎴</option>
+              <option value="0" <%= !u.hasCard ? 'selected' : '' %>>لا</option>
+            </select>
+          </td>
+          <td><input name="billyCurrent" type="number" value="<%= u.billyCurrent %>" min="0"></td>
+          <td><input name="billyNext" type="number" value="<%= u.billyNext %>" min="0"></td>
+          <td><%= u.role %></td>
+          <td>
+            <button type="submit">حفظ</button>
+        </form>
+            <form method="POST" action="/users/<%= u.id %>/delete" style="display:inline" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
+              <button type="submit" style="background:red;color:white;">حذف</button>
+            </form>
+          </td>
+      </tr>
+    <% }) %>
+  </table>
+
+  <h2>إنشاء مستخدم جديد</h2>
+  <form method="POST" action="/users/create">
+    <input name="username" placeholder="اسم المستخدم" required>
+    <input name="password" type="password" placeholder="كلمة المرور" required>
+    <input name="nickname" placeholder="اللقب" required>
+    <select name="role" required>
+      <option value="user">عضو</option>
+      <option value="moderator">مشرف</option>
+      <option value="admin">جادج</option>
+    </select>
+    <button type="submit">إنشاء</button>
+  </form>
+
+  <h2>تحويل بيلي</h2>
+  <form method="POST" action="/transfer">
+    <input name="toUsername" placeholder="اسم المستلم" required>
+    <input name="amount" type="number" placeholder="المبلغ" required>
+    <button type="submit">تحويل</button>
+  </form>
+
+  <h2>سجل كل التحويلات</h2>
+  <ul>
+    <% transfers.forEach(t => { %>
+      <li>
+        <%= t.date.slice(0,16).replace('T',' ') %>: 
+        <%= t.fromNick %> → <%= t.toNick %> (بيلي: <%= t.amount %>)
+      </li>
+    <% }) %>
+  </ul>
+
+  <p><a href="/logout">تسجيل الخروج</a></p>
+</body>
+</html>
